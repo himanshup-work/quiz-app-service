@@ -18,5 +18,5 @@ psql -v ON_ERROR_STOP="on" -h "${HOST}" -p "${PORT}" -d "${DATABASE}" -U "${MAST
 
 # Now run the user creation script (005-users.sql) with admin and app user passwords
 psql -v ON_ERROR_STOP="on" -h "${HOST}" -p "${PORT}" -d "${DATABASE}" -U "${MASTER_USERNAME}" \
-    -v new_admin_password="${NEW_ADMIN_PWD}" -v new_user_password="${NEW_USER_PWD}" -f 005-users.sql
+    -v new_admin_password="'${NEW_ADMIN_PWD}'" -v new_user_password="'${NEW_USER_PWD}'" -f 005-users.sql
 

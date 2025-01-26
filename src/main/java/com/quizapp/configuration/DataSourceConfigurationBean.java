@@ -3,8 +3,10 @@ package com.quizapp.configuration;
 import com.quizapp.QuizApplicationProperties;
 import lombok.NonNull;
 import lombok.val;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
 import javax.sql.DataSource;
@@ -26,4 +28,12 @@ public class DataSourceConfigurationBean {
 
         return dataSourceProps;
     }
+
+    @Bean(name = "jdbcTemplate")
+    public JdbcTemplate jdbcTemplate(
+            @NonNull @Qualifier("serviceDataSource") DataSource dataSource
+    ){
+        return new JdbcTemplate(dataSource);
+    }
+
 }
