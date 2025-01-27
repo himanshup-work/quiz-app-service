@@ -8,5 +8,4 @@ quiz.app.service:
     password: db-username
     schema: application-schema-name
 
-spring.datasource.initialization-mode: always
 logging.level.org.springframework.boot.context.properties: DEBUG

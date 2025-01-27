@@ -14,4 +14,13 @@ public class UserServiceImpl implements UserService {
     public User getUserById(String userId) {
         return this.userRepository.findUserById(userId);
     }
+
+    @Override
+    public User createUser(User user) {
+        try {
+            return this.userRepository.saveUser(user);
+        }catch (Exception e){
+            throw new RuntimeException(e);
+        }
+    }
 }
