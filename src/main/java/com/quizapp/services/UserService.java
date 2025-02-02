@@ -1,11 +1,12 @@
 package com.quizapp.services;
 
 import com.quizapp.ingestion.User;
-import org.springframework.stereotype.Service;
 
-@Service
 public interface UserService {
     User getUserById(String userId);
-
-    User createUser(User user);
+    User saveOrUpdateUser(User user);
+    boolean userExist(String email);
+    void deleteUser(String userId);
+    User getUserByEmail(String email);
+    User getUserByEmailOrUsername(String emailOrUsername);
 }
