@@ -9,9 +9,11 @@ import java.util.List;
 
 public class CustomUserDetails implements UserDetails {
     private final User user;
+    private final String loginIdentifier; // Stores the email or username used for login
 
-    public CustomUserDetails(User user) {
+    public CustomUserDetails(User user, String loginIdentifier) {
         this.user = user;
+        this.loginIdentifier = loginIdentifier;
     }
 
     @Override
@@ -32,7 +34,8 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public String getUsername() {
-        return user.getEmail();
+        // Return the login identifier (email or username)
+        return loginIdentifier;
     }
 
     @Override

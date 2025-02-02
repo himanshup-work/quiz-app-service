@@ -99,4 +99,20 @@ public class UserServiceImpl implements UserService {
             throw new DatabaseException("Database error while finding user by email: " + e.getMessage());
         }
     }
+
+    @Override
+    public User getUserByEmailOrUsername(String emailOrUsername) {
+        log.info("Fetching user by email or username: {}", emailOrUsername);
+        try {
+            User user = this.userRepository.findUserByEmailOrUsername(emailOrUsername);
+            log.debug("User found: {}", user);
+            return user;
+        } catch (EmptyResultDataAccessException e) {
+            log.error("User not found with email or username: {}", emailOrUsername, e);
+            throw new ResourceNotFoundException("User", "email or username", emailOrUsername);
+        } catch (DataAccessException e) {
+            log.error("Database error while finding user by email: {}", emailOrUsername, e);
+            throw new DatabaseException("Database error while finding user by email or username: " + e.getMessage());
+        }
+    }
 }

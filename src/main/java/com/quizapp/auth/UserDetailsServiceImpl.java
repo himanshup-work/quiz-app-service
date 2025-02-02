@@ -17,11 +17,12 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     }
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = this.userService.getUserByEmail(username);
-        if (user == null){
-            throw new UsernameNotFoundException("User not found with this email!!");
+    public UserDetails loadUserByUsername(String loginIdentifier) throws UsernameNotFoundException {
+        // Fetch user by email or username
+        User user = this.userService.getUserByEmailOrUsername(loginIdentifier);
+        if (user == null) {
+            throw new UsernameNotFoundException("User not found with this email or username!!");
         }
-        return new CustomUserDetails(user);
+        return new CustomUserDetails(user, loginIdentifier);
     }
 }

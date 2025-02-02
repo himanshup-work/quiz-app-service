@@ -88,4 +88,16 @@ public class UserRepository {
             throw e; // Re-throw the exception for handling in the service layer
         }
     }
+
+    @SuppressWarnings("deprecation")
+    public User findUserByEmailOrUsername(String emailOrUsername) {
+        log.debug("Fetching user by email or username: {}", emailOrUsername);
+        val sqlTemplate = this.resourceReader.readSqlFile(SqlScriptsFilePath.SELECT_USER_BY_EMAIL_OR_USERNAME_SCRIPT_FILE_PATH);
+        try {
+            return this.jdbcTemplate.queryForObject(sqlTemplate, new Object[]{emailOrUsername,emailOrUsername}, new UserRowMapper());
+        } catch (DataAccessException e) {
+            log.error("Error fetching user by email or username: {}", emailOrUsername, e);
+            throw e; // Re-throw the exception for handling in the service layer
+        }
+    }
 }
