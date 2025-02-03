@@ -1,0 +1,47 @@
+package com.quizapp.repositories;
+
+import com.quizapp.constants.SqlScriptsFilePath;
+import com.quizapp.ingestion.Option;
+import com.quizapp.utils.ClassPathResourceReader;
+import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+
+@Repository
+@Slf4j
+public class OptionRepository {
+    private final JdbcTemplate jdbcTemplate;
+    private final ClassPathResourceReader resourceReader;
+
+    public OptionRepository(@NonNull JdbcTemplate jdbcTemplate, @NonNull ClassPathResourceReader resourceReader) {
+        this.jdbcTemplate = jdbcTemplate;
+        this.resourceReader = resourceReader;
+    }
+
+    public void saveOrUpdateOptions(List<Option> options) {
+        log.debug("Saving or updating {} options", options.size());
+        String sqlTemplate = this.resourceReader.readSqlFile(SqlScriptsFilePath.INSERT_OPTION_SCRIPT_FILE_PATH);
+
+        try {
+            this.jdbcTemplate.batchUpdate(sqlTemplate,
+                    options,
+                    options.size(), // Batch size
+                    (ps, option) -> {
+                        ps.setString(1, option.getOptionId());
+                        ps.setString(2, option.getQuestionId());
+                        ps.setString(3, option.getOptionText());
+                        ps.setBoolean(4, option.isCorrect());
+                    }
+            );
+        } catch (DataAccessException e) {
+            log.error("Error saving or updating batch options", e);
+            throw e;
+        }
+    }
+}
+
+

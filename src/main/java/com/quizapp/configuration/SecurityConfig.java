@@ -19,7 +19,8 @@ public class SecurityConfig {
     public static final String[] PUBLIC_URLS = {
             "/user/create",
             "/auth/login",
-            "/forgot/**"
+            "/forgot/**",
+            "/quiz/create"
     };
     private final JwtAuthenticationEntryPoint entryPoint;
     private final JwtAuthenticationFilter authenticationFilter;

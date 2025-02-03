@@ -11,4 +11,6 @@ public class SqlScriptsFilePath {
     public static final String SELECT_USER_SCRIPT_FILE_PATH = "sql/select-user-by-user-id.sql";
     public static final String INSERT_USER_SCRIPT_FILE_PATH = "sql/insert-user.sql";
     public static final String SELECT_USER_BY_EMAIL_OR_USERNAME_SCRIPT_FILE_PATH = "sql/select-user-by-email-or-username.sql";
+    public static final String INSERT_QUESTION_SCRIPT_FILE_PATH = "";
+    public static final String INSERT_OPTION_SCRIPT_FILE_PATH = "";
 }
