@@ -32,7 +32,7 @@ public class QuestionServiceImpl implements QuestionService {
         }
 
         try {
-            this.questionRepository.saveOrUpdateQuestions(questions);
+            this.questionRepository.insertQuestions(questions);
             log.info("Questions saved or updated successfully");
         } catch (DataAccessException e) {
             log.error("Database error while saving or updating questions", e);

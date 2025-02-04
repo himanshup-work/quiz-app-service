@@ -6,9 +6,12 @@ import com.quizapp.utils.ClassPathResourceReader;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.List;
 
 @Repository
@@ -22,18 +25,25 @@ public class QuestionRepository {
         this.resourceReader = resourceReader;
     }
 
-    public void saveOrUpdateQuestions(List<Question> questions) {
+    public void insertQuestions(List<Question> questions) {
         log.debug("Saving or updating {} questions", questions.size());
         String sqlTemplate = this.resourceReader.readSqlFile(SqlScriptsFilePath.INSERT_QUESTION_SCRIPT_FILE_PATH);
 
         try {
             this.jdbcTemplate.batchUpdate(sqlTemplate,
-                    questions,
-                    questions.size(), // Batch size (adjust if needed)
-                    (ps, question) -> {
-                        ps.setString(1, question.getQuestionId());
-                        ps.setString(2, question.getQuizId());
-                        ps.setString(3, question.getQuestionText());
+                    new BatchPreparedStatementSetter() {
+                        @Override
+                        public void setValues(@NonNull PreparedStatement ps, int i) throws SQLException {
+                            Question question = questions.get(i);
+                            ps.setString(1, question.getQuestionId());
+                            ps.setString(2, question.getQuestionText());
+                            ps.setString(3, question.getQuizId());
+                        }
+
+                        @Override
+                        public int getBatchSize() {
+                            return questions.size();
+                        }
                     }
             );
         } catch (DataAccessException e) {

@@ -32,7 +32,7 @@ public class OptionServiceImpl implements OptionService {
         }
 
         try {
-            this.optionRepository.saveOrUpdateOptions(options);
+            this.optionRepository.insertOptions(options);
             log.info("Options saved or updated successfully");
         } catch (DataAccessException e) {
             log.error("Database error while saving or updating options", e);

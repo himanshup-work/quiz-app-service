@@ -1,9 +1,11 @@
 package com.quizapp.ingestion;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
 import lombok.Data;
 
-import java.sql.Timestamp;
+import java.sql.Time;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
@@ -11,11 +13,13 @@ import java.util.List;
 public class Quiz {
     private String quizId;
     private String quizTitle;
-    private String categoryId;
+    private String categoryName;
+    @JsonIgnore
+    private int categoryId;
     private String quizDescription;
-    private String timeLimit;
-    private String passingScore;
+    private Time timeLimit;
+    private int passingScore;
     private String createdBy;
-    private Timestamp createdAt;
+    private LocalDateTime createdAt;
     private List<Question> questions;
 }
