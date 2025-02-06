@@ -21,7 +21,6 @@ public class AuthServiceImpl implements AuthService {
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
 
-    @Override
     @PostConstruct
     public void saveAdminUser() {
         User user = User.builder()
