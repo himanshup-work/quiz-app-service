@@ -12,10 +12,12 @@ public class UserRowMapper implements RowMapper<User> {
 
         return  User.builder()
                 .userId(rs.getString("user_id"))
-                .fullName(rs.getString("full_name"))
+                .firstName(rs.getString("first_name"))
+                .lastName(rs.getString("last_name"))
                 .email(rs.getString("email"))
                 .username(rs.getString("user_name"))
                 .password(rs.getString("password"))
+                .bio(rs.getString("bio"))
                 .image(rs.getBytes("image"))
                 .role(rs.getString("role"))
                 .build();

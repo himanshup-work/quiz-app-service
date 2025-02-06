@@ -11,9 +11,11 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Repository
+@Transactional
 public class UserRepository {
     private final JdbcTemplate jdbcTemplate;
     private final ClassPathResourceReader resourceReader;
@@ -43,9 +45,11 @@ public class UserRepository {
         try {
             return this.jdbcTemplate.update(sqlTemplate,
                     user.getUserId(),
-                    user.getFullName(),
+                    user.getFirstName(),
+                    user.getLastName(),
                     user.getEmail(),
                     user.getUsername(),
+                    user.getBio(),
                     user.getPassword(),
                     user.getImage(),
                     user.getRole());
@@ -55,13 +59,13 @@ public class UserRepository {
         }
     }
 
-    public boolean userExist(String email) {
-        log.debug("Checking if user exists with email: {}", email);
-        val sqlTemplate = "SELECT EXISTS (SELECT 1 FROM quiz_app_service.users WHERE email = ?);";
+    public boolean userExist(String emailOrUsername) {
+        log.debug("Checking if user exists with email: {}", emailOrUsername);
+        val sqlTemplate = "SELECT EXISTS (SELECT 1 FROM quiz_app_service.users WHERE email = ? OR user_name = ?);";
         try {
-            return jdbcTemplate.queryForObject(sqlTemplate, Boolean.class, email);
+            return jdbcTemplate.queryForObject(sqlTemplate, Boolean.class, emailOrUsername, emailOrUsername);
         } catch (DataAccessException e) {
-            log.error("Error checking user existence for email: {}", email, e);
+            log.error("Error checking user existence for email: {}", emailOrUsername, e);
             throw e; // Re-throw the exception for handling in the service layer
         }
     }

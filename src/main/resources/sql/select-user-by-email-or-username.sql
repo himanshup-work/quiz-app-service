@@ -1,4 +1,4 @@
-SELECT user_id, full_name, email, user_name, password, image, role
+SELECT user_id, first_name, last_name, email, user_name, password, bio, image, role
 FROM users
 WHERE email = ?
 OR user_name = ?;
