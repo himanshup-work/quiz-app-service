@@ -2,22 +2,19 @@ package com.quizapp.repositories;
 
 import com.quizapp.constants.SqlScriptsFilePath;
 import com.quizapp.ingestion.Quiz;
+import com.quizapp.mappers.QuizRowMapper;
 import com.quizapp.utils.ClassPathResourceReader;
-import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.sql.Timestamp;
-import java.time.DateTimeException;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 @Repository
 @Slf4j
 public class QuizRepository {
-    private static final String DATE_TIME_FORMAT = "yyyy-mm-dd hh:mm:ss";
     private final ClassPathResourceReader resourceReader;
     private final JdbcTemplate jdbcTemplate;
 
@@ -45,18 +42,9 @@ public class QuizRepository {
         }
     }
 
-    private Timestamp getTimestamp(@NonNull LocalDateTime localDateTime) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DATE_TIME_FORMAT);
-        System.out.println(localDateTime);
-        try {
-            String timestamp = localDateTime.format(formatter);
-            Timestamp ts = new Timestamp(Long.parseLong(timestamp));
-            System.out.println(ts);
-            return Timestamp.valueOf(localDateTime.format(formatter));
-        }catch (DateTimeException e){
-            log.error("Error while parsing timestamp: {}", localDateTime, e);
-            throw new DateTimeException("Error while parsing timestamp: " + localDateTime, e);
-        }
+    public List<Quiz> getAll() {
+        log.debug("Fetching all the quiz from database");
+        String sqlTemplate = this.resourceReader.readSqlFile(SqlScriptsFilePath.SELECT_ALL_QUIZZES);
+        return this.jdbcTemplate.query(sqlTemplate, new QuizRowMapper());
     }
-
 }

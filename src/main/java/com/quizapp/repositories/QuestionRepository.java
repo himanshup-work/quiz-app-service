@@ -2,6 +2,7 @@ package com.quizapp.repositories;
 
 import com.quizapp.constants.SqlScriptsFilePath;
 import com.quizapp.ingestion.Question;
+import com.quizapp.mappers.QuestionRowMapper;
 import com.quizapp.utils.ClassPathResourceReader;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
@@ -50,6 +51,12 @@ public class QuestionRepository {
             log.error("Error saving or updating batch questions", e);
             throw e;
         }
+    }
+
+    public List<Question> findQuestionsByQuizId(String quizId) {
+        String sqlTemplate = this.resourceReader.readSqlFile(SqlScriptsFilePath.SELECT_ALL_QUESTIONS_BY_QUIZ_ID);
+        return this.jdbcTemplate.query(sqlTemplate, new QuestionRowMapper(), quizId);
+
     }
 }
 

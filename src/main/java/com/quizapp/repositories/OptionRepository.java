@@ -2,6 +2,7 @@ package com.quizapp.repositories;
 
 import com.quizapp.constants.SqlScriptsFilePath;
 import com.quizapp.ingestion.Option;
+import com.quizapp.mappers.OptionRowMapper;
 import com.quizapp.utils.ClassPathResourceReader;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
@@ -52,6 +53,11 @@ public class OptionRepository {
             log.error("Error saving or updating batch options", e);
             throw e;
         }
+    }
+
+    public List<Option> findOptionsByQuestionId(String questionId) {
+        String sqlTemplate = this.resourceReader.readSqlFile(SqlScriptsFilePath.SELECT_ALL_OPTIONS_BY_QUESTION_ID);
+        return this.jdbcTemplate.query(sqlTemplate, new OptionRowMapper(), questionId);
     }
 }
 

@@ -1,0 +1,1 @@
+SELECT * FROM quiz_app_service.quiz;

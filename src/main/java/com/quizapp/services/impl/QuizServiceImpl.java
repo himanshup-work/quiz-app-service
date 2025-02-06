@@ -8,6 +8,8 @@ import com.quizapp.services.CategoryService;
 import com.quizapp.services.OptionService;
 import com.quizapp.services.QuestionService;
 import com.quizapp.services.QuizService;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.stereotype.Service;
 
@@ -16,19 +18,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+@Slf4j
 @Service
+@RequiredArgsConstructor
 public class QuizServiceImpl implements QuizService {
     private final QuizRepository quizRepository;
     private final QuestionService questionService;
     private final OptionService optionService;
     private final CategoryService categoryService;
-
-    public QuizServiceImpl(QuizRepository quizRepository, QuestionService questionService, OptionService optionService, CategoryService categoryService) {
-        this.quizRepository = quizRepository;
-        this.questionService = questionService;
-        this.optionService = optionService;
-        this.categoryService = categoryService;
-    }
 
 
     @Override
@@ -61,5 +58,15 @@ public class QuizServiceImpl implements QuizService {
         this.questionService.saveOrUpdateQuestions(questions);
         this.optionService.saveOrUpdateOptions(options);
         return null;
+    }
+
+    @Override
+    public List<Quiz> getAllQuizzes() {
+        List<Quiz> quizzes = this.quizRepository.getAll();
+        for (Quiz quiz : quizzes){
+            List<Question> questions = this.questionService.getAllQuestionsByQuizId(quiz.getQuizId());
+            quiz.setQuestions(questions);
+        }
+        return quizzes;
     }
 }
