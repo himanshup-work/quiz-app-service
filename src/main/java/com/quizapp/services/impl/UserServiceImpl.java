@@ -5,20 +5,17 @@ import com.quizapp.exceptions.ResourceNotFoundException;
 import com.quizapp.ingestion.User;
 import com.quizapp.repositories.UserRepository;
 import com.quizapp.services.UserService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
-
-import java.util.UUID;
 
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
-    @Autowired UserRepository userRepository;
-    @Autowired PasswordEncoder passwordEncoder;
+    private final UserRepository userRepository;
 
     @Override
     public User getUserById(String userId) {
@@ -38,18 +35,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User saveOrUpdateUser(User user) {
-        log.info("Saving or updating user: {}", user.getEmail());
-        if (user.getUserId() == null || user.getUserId().isEmpty()) {
-            log.debug("Generating new user ID for: {}", user.getEmail());
-            user.setUserId(UUID.randomUUID().toString());
-            user.setPassword(passwordEncoder.encode(user.getPassword()));
-            user.setRole("ROLE_USER");
-        } else {
-            log.debug("Updating existing user with ID: {}", user.getUserId());
-            User existingUser = this.getUserById(user.getUserId());
-            user.setPassword(existingUser.getPassword());
-        }
-
         try {
             int rowsAffected = this.userRepository.saveOrUpdateUser(user);
             if (rowsAffected == 0) {

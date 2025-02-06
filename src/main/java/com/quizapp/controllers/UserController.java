@@ -4,66 +4,57 @@ import com.quizapp.exceptions.ResourceNotFoundException;
 import com.quizapp.ingestion.User;
 import com.quizapp.services.UserService;
 import com.quizapp.utils.ApiResponse;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+@Slf4j
 @RestController
 @RequestMapping("/user")
+@RequiredArgsConstructor
 public class UserController {
-    @Autowired UserService userService;
+    private final UserService userService;
 
     @GetMapping("/{userId}")
-    public ResponseEntity<ApiResponse> getUser(@PathVariable("userId") String userId) {
-        User user = this.userService.getUserById(userId); // Service call
+    public ResponseEntity<ApiResponse> getUserById(@PathVariable("userId") String userId) {
+        // Log the request for traceability
+        log.info("Fetching user with ID: {}", userId);
+
+        // Retrieve user, which will throw ResourceNotFoundException if not found
+        User user = userService.getUserById(userId);
+
         return ResponseEntity.ok(ApiResponse.builder()
                 .status(true)
-                .message("User found successfully with ID: " + userId)
+                .message("User found successfully")
                 .data(user)
                 .build());
     }
 
-
-    @PostMapping("/create")
-    public ResponseEntity<ApiResponse> createUser(@RequestBody User user) {
-        System.out.println(user.getPassword());
-        if (userService.userExist(user.getEmail())) {
-            return ResponseEntity
-                    .status(HttpStatus.CONFLICT) // 409 Conflict
-                    .body(ApiResponse.builder()
-                            .status(false)
-                            .message("User already exists with email: " + user.getEmail())
-                            .data(null)
-                            .build());
-        }
-
-        // Since user doesn't exist, create a new user
-        User createdUser = userService.saveOrUpdateUser(user);
-
-        return ResponseEntity
-                .status(HttpStatus.CREATED) // 201 Created
-                .body(ApiResponse.builder()
-                        .status(true)
-                        .message("User created successfully with ID: " + createdUser.getUserId())
-                        .data(createdUser)
-                        .build());
-    }
-
-
-
     @PutMapping("/edit")
     public ResponseEntity<ApiResponse> updateUser(@RequestBody User user) {
-        if (!userService.userExist(user.getEmail())) {
-            // If user doesn't exist, throw a ResourceNotFoundException
+        // Validate user existence before update
+        User existingUser = userService.getUserByEmailOrUsername(user.getEmail());
+        if (existingUser == null) {
+            log.warn("Attempted to update non-existent user with email: {}", user.getEmail());
             throw new ResourceNotFoundException("User", "email", user.getEmail());
         }
 
-        // Since user exists, update it
+        // Preserve existing user ID if not provided
+        if (user.getUserId() == null) {
+            user.setUserId(existingUser.getUserId());
+        }
+
+        // Log update attempt
+        log.info("Updating user with email: {}", user.getEmail());
+
+        // Perform update
         User updatedUser = userService.saveOrUpdateUser(user);
 
+        log.info("User updated successfully: {}", updatedUser.getEmail());
+
         return ResponseEntity.ok(ApiResponse.builder()
-                .message("User updated successfully.")
+                .message("User updated successfully")
                 .status(true)
                 .data(updatedUser)
                 .build());
@@ -71,15 +62,22 @@ public class UserController {
 
     @DeleteMapping("/delete/{userId}")
     public ResponseEntity<ApiResponse> deleteUser(@PathVariable("userId") String userId) {
-        this.userService.deleteUser(userId);  // Service call
+        // Log deletion attempt
+        log.info("Attempting to delete user with ID: {}", userId);
+
+        // Verify user exists before deletion
+        User userToDelete = userService.getUserById(userId);
+
+        // Perform deletion
+        userService.deleteUser(userId);
+
+        log.info("User deleted successfully: {}", userId);
+
         return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(ApiResponse.builder()
-                        .message("User deleted successfully.")
+                .ok(ApiResponse.builder()
+                        .message("User deleted successfully")
                         .status(true)
                         .data(null)
                         .build());
     }
-
-
 }

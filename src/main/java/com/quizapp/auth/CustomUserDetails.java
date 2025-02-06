@@ -18,13 +18,7 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        String role = (user.getRole() != null && !user.getRole().isEmpty())
-                ? user.getRole()
-                : "ROLE_USER";
-        if (!role.startsWith("ROLE_")) {
-            role = "ROLE_" + role;
-        }
-        return List.of(new SimpleGrantedAuthority(role));
+        return List.of(new SimpleGrantedAuthority("ROLE_"+ user.getRole()));
     }
 
     @Override
