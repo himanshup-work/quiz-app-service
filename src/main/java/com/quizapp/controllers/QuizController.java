@@ -57,7 +57,7 @@ public class QuizController {
     }
 
     // Controller for get all quiz
-    @GetMapping("/getAll")
+    @GetMapping("/get-all")
     public ResponseEntity<ApiResponse> getAll(){
         // Get logged-in user using SecurityContextHolder
         String loggedInUser = getCurrentUsername();
