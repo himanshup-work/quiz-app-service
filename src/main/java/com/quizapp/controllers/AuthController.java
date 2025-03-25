@@ -33,7 +33,7 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<ApiResponse> login(@RequestBody AuthRequest request) {
         // Check if user exists
-        User existingUser = userService.getUserByEmailOrUsername(request.getEmailOrUsername());
+        User existingUser = userService.getUserByEmailOrUsername(request.getEmail());
         if (existingUser == null) {
             return ResponseEntity
                     .status(HttpStatus.UNAUTHORIZED)
@@ -47,12 +47,12 @@ public class AuthController {
         try {
             // Attempt authentication
             authManager.authenticate(new UsernamePasswordAuthenticationToken(
-                    request.getEmailOrUsername(),
+                    request.getEmail(),
                     request.getPassword()
             ));
 
             // Load user details and generate token
-            UserDetails userDetails = userDetailsService.loadUserByUsername(request.getEmailOrUsername());
+            UserDetails userDetails = userDetailsService.loadUserByUsername(request.getEmail());
             String token = jwtUtil.generateToken(userDetails, existingUser);
 
             return ResponseEntity.ok(ApiResponse.builder()
