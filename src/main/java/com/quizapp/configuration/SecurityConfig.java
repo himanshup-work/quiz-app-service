@@ -26,7 +26,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 public class SecurityConfig {
     public static final String[] PUBLIC_URLS = {
-            "/auth/**"
+            "/auth/**",
+            "/quiz/**"
     };
     private final JwtAuthenticationEntryPoint entryPoint;
     private final JwtAuthenticationFilter authenticationFilter;

@@ -6,4 +6,5 @@ import java.util.List;
 
 public interface QuestionService {
     void saveOrUpdateQuestions(List<Question> questions);
+    List<Question> getAllQuestionsByQuizId(String quizId);
 }

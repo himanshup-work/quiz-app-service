@@ -4,6 +4,7 @@ import com.quizapp.exceptions.DatabaseException;
 import com.quizapp.ingestion.Option;
 import com.quizapp.repositories.OptionRepository;
 import com.quizapp.services.OptionService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
@@ -13,12 +14,9 @@ import java.util.UUID;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class OptionServiceImpl implements OptionService {
     private final OptionRepository optionRepository;
-
-    public OptionServiceImpl(OptionRepository optionRepository) {
-        this.optionRepository = optionRepository;
-    }
 
     @Override
     public void saveOrUpdateOptions(List<Option> options) {
@@ -38,6 +36,11 @@ public class OptionServiceImpl implements OptionService {
             log.error("Database error while saving or updating options", e);
             throw new DatabaseException("Database error while saving or updating options: " + e.getMessage());
         }
+    }
+
+    @Override
+    public List<Option> getAllOptionsByQuestionId(String questionId) {
+        return this.optionRepository.findOptionsByQuestionId(questionId);
     }
 }
 
